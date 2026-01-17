@@ -1,0 +1,87 @@
+Performing C++ SOURCE FILE Test CPP20_FLAG_BUILTIN failed with the following output:
+Change Dir: /home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-EJO48E
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a9304/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a9304.dir/build.make CMakeFiles/cmTC_a9304.dir/build
+gmake[1]: Verzeichnis „/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-EJO48E“ wird betreten
+Building CXX object CMakeFiles/cmTC_a9304.dir/src.cxx.o
+/usr/bin/c++ -DCPP20_FLAG_BUILTIN -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/include -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/submodules/sdsl-lite/include -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/submodules/cereal/include  -o CMakeFiles/cmTC_a9304.dir/src.cxx.o -c /home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-EJO48E/src.cxx
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-EJO48E/src.cxx:2:8: error: #error NOCXX20
+    2 |       #error NOCXX20
+      |        ^~~~~
+gmake[1]: *** [CMakeFiles/cmTC_a9304.dir/build.make:78: CMakeFiles/cmTC_a9304.dir/src.cxx.o] Fehler 1
+gmake[1]: Verzeichnis „/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-EJO48E“ wird verlassen
+gmake: *** [Makefile:127: cmTC_a9304/fast] Fehler 2
+
+
+Source file was:
+#if !defined (__cplusplus) || (__cplusplus < 202002L)
+      #error NOCXX20
+      #endif
+      int main() {}
+
+Performing C SOURCE FILE Test HAVE___DECLSPEC_DLLEXPORT_ failed with the following output:
+Change Dir: /home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_e0e4a/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_e0e4a.dir/build.make CMakeFiles/cmTC_e0e4a.dir/build
+gmake[1]: Verzeichnis „/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb“ wird betreten
+Building C object CMakeFiles/cmTC_e0e4a.dir/src.c.o
+/usr/bin/cc -DHAVE___DECLSPEC_DLLEXPORT_ -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/include -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/submodules/sdsl-lite/include -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/submodules/cereal/include -Wall  -o CMakeFiles/cmTC_e0e4a.dir/src.c.o -c /home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c:1:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+    1 | __declspec(dllexport) void func(); void func() { } int main() { func(); return 0; }
+      | ^~~~~~~~~~
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c: In function ‘__declspec’:
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c:1:48: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+    1 | __declspec(dllexport) void func(); void func() { } int main() { func(); return 0; }
+      |                                                ^
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c:1:63: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+    1 | __declspec(dllexport) void func(); void func() { } int main() { func(); return 0; }
+      |                                                               ^
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c:1:1: warning: type of ‘dllexport’ defaults to ‘int’ [-Wimplicit-int]
+    1 | __declspec(dllexport) void func(); void func() { } int main() { func(); return 0; }
+      | ^~~~~~~~~~
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c:1:28: error: declaration for parameter ‘func’ but no such parameter
+    1 | __declspec(dllexport) void func(); void func() { } int main() { func(); return 0; }
+      |                            ^~~~
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c:2: error: expected ‘{’ at end of input
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb/src.c:2: warning: control reaches end of non-void function [-Wreturn-type]
+gmake[1]: *** [CMakeFiles/cmTC_e0e4a.dir/build.make:78: CMakeFiles/cmTC_e0e4a.dir/src.c.o] Fehler 1
+gmake[1]: Verzeichnis „/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-jWI5Nb“ wird verlassen
+gmake: *** [Makefile:127: cmTC_e0e4a/fast] Fehler 2
+
+
+Source file was:
+__declspec(dllexport) void func(); void func() { } int main() { func(); return 0; }
+
+Performing C SOURCE FILE Test HAVE___DECLSPEC_DLLIMPORT_ failed with the following output:
+Change Dir: /home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_37e25/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_37e25.dir/build.make CMakeFiles/cmTC_37e25.dir/build
+gmake[1]: Verzeichnis „/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu“ wird betreten
+Building C object CMakeFiles/cmTC_37e25.dir/src.c.o
+/usr/bin/cc -DHAVE___DECLSPEC_DLLIMPORT_ -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/include -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/submodules/sdsl-lite/include -I/home/mi/malzea03/ImplementingSearch/lib/seqan3/submodules/cereal/include -Wall  -o CMakeFiles/cmTC_37e25.dir/src.c.o -c /home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c:1:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+    1 | __declspec(dllimport) void func(); void func() { } int main() { func(); return 0; }
+      | ^~~~~~~~~~
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c: In function ‘__declspec’:
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c:1:48: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+    1 | __declspec(dllimport) void func(); void func() { } int main() { func(); return 0; }
+      |                                                ^
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c:1:63: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+    1 | __declspec(dllimport) void func(); void func() { } int main() { func(); return 0; }
+      |                                                               ^
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c:1:1: warning: type of ‘dllimport’ defaults to ‘int’ [-Wimplicit-int]
+    1 | __declspec(dllimport) void func(); void func() { } int main() { func(); return 0; }
+      | ^~~~~~~~~~
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c:1:28: error: declaration for parameter ‘func’ but no such parameter
+    1 | __declspec(dllimport) void func(); void func() { } int main() { func(); return 0; }
+      |                            ^~~~
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c:2: error: expected ‘{’ at end of input
+/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu/src.c:2: warning: control reaches end of non-void function [-Wreturn-type]
+gmake[1]: *** [CMakeFiles/cmTC_37e25.dir/build.make:78: CMakeFiles/cmTC_37e25.dir/src.c.o] Fehler 1
+gmake[1]: Verzeichnis „/home/mi/malzea03/ImplementingSearch/build/CMakeFiles/CMakeScratch/TryCompile-00QyGu“ wird verlassen
+gmake: *** [Makefile:127: cmTC_37e25/fast] Fehler 2
+
+
+Source file was:
+__declspec(dllimport) void func(); void func() { } int main() { func(); return 0; }
+
