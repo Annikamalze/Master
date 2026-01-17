@@ -1,4 +1,5 @@
 #include <sstream>
+#include <chrono>
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
@@ -9,7 +10,19 @@
 
 // prints out all occurences of query inside of ref
 void findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query) {
-    //!TODO ImplementMe
+    if(query.empty() || ref.size() < query.size()) {
+    return;
+    }
+
+    std::vector<size_t> positions;
+    size_t m = query.size();
+
+    for(size_t i = 0; i <= ref.size() - m; ++i) {
+        if(std::equal(query.begin(), query.end(), ref.begin() + i)) {
+            positions.push_back(i);
+        }
+    }
+
 }
 
 int main(int argc, char const* const* argv) {
@@ -59,12 +72,16 @@ int main(int argc, char const* const* argv) {
     }
     queries.resize(number_of_queries); // will reduce the amount of searches
 
+    auto start = std::chrono::high_resolution_clock::now();
     //! search for all occurences of queries inside of reference
     for (auto& r : reference) {
         for (auto& q : queries) {
             findOccurences(r, q);
         }
     }
-
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> runtime = end - start;
+    std::cout << "Runtime for " << queries.size() << " queries: " << runtime.count() << " s\n";
+    
     return 0;
 }
