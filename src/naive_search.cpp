@@ -17,7 +17,7 @@ void findOccurences(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dn
     std::vector<size_t> positions;
     size_t m = query.size();
 
-    for(size_t i = 0; i <= ref.size() - m; ++i) {
+    for(size_t i = 0; i <= ref.size(); ++i) {
         if(std::equal(query.begin(), query.end(), ref.begin() + i)) {
             positions.push_back(i);
         }

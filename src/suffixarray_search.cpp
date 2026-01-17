@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
@@ -117,7 +118,7 @@ int main(int argc, char const * const * argv)
         return EXIT_FAILURE;
     }
 
-
+    auto start = std::chrono::high_resolution_clock::now();
     for (auto const & q : queries)
     {
         size_t LP = find_LP(reference, suffixarray, q);
@@ -130,6 +131,9 @@ int main(int argc, char const * const * argv)
         // optional output
         // std::cout << hits.size() << "\n";
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    double seconds = std::chrono::duration<double>(end - start).count();
+    std::cout << "runtime for " << queries.size() << " queries: " << seconds << " s\n";
 
     return 0;
 }
