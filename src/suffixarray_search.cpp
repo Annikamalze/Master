@@ -129,7 +129,7 @@ int main(int argc, char const * const * argv)
             hits.push_back(suffixarray[i]);
 
         // optional output
-        std::cout << "hit" << hits<< "\n";
+        std::cout << "hit" << hits[0] << suffixarray[0] << "\n";
     }
     auto end = std::chrono::high_resolution_clock::now();
     double seconds = std::chrono::duration<double>(end - start).count();
