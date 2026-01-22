@@ -74,7 +74,7 @@ int main(int argc, char const* const* argv) {
     }
     for (size_t i = 0; i < 10; ++i)
     {
-        seqan3::debug_stream << "Hit " << i+1 << " at position: " << hit_positions[i] << "\n";
+        seqan3::debug_stream << "Hits: " << hit_positions[i];
     }
     
 }
