@@ -71,7 +71,7 @@ int main(int argc, char const* const* argv) {
         {
             hit_positions.push_back(hit.reference_begin_position());
 
-            for(size_t i = 0; i < 11 && i < hit_positions.size(); i++)
+            for(size_t i = 0; i < 11; i++)
             {
                 seqan3::debug_stream << "Hit at position: " << hit_positions[i] << "\n";
             }
