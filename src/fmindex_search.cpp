@@ -70,11 +70,10 @@ int main(int argc, char const* const* argv) {
         for (auto const & hit : seqan3::search(query, index, cfg))
         {
             hit_positions.push_back(hit.reference_begin_position());
-
-            for(size_t i = 0; i < 11; i++)
-            {
-                seqan3::debug_stream << "Hit at position: " << hit_positions[i] << "\n";
-            }
+        }
+        for (size_t i = 0; i < 10; ++i)
+        {
+            seqan3::debug_stream << "Hit " << i+1 << " at position: " << hit_positions[i] << "\n";
         }
     }
 }
