@@ -65,15 +65,21 @@ int main(int argc, char const* const* argv) {
     seqan3::configuration const cfg = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{number_of_errors}};
     
     std::vector<size_t> hit_positions;
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::steady_clock::now();
+
     for (auto const & query : queries)
-    {   
+    {
+        for (auto const & hit : seqan3::search(query, index, cfg))
+        {
+        }
+    }
+
+    auto end = std::chrono::steady_clock::now();
+
+    for (auto const & query : queries)
+    {
         for (auto const & hit : seqan3::search(query, index, cfg))
         {
             hit_positions.push_back(hit.reference_begin_position());
         }
-    }    
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> runtime = end - start;
-    std::cout << "Runtime for " << queries.size() << " queries: " << runtime.count() << " s\n";
-}
+    }
