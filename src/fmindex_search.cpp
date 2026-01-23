@@ -83,3 +83,4 @@ int main(int argc, char const* const* argv) {
             hit_positions.push_back(hit.reference_begin_position());
         }
     }
+}
