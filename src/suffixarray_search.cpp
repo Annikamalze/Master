@@ -1,3 +1,4 @@
+//Annika Malze (5565183), Clara Daßio (5568983), Janina Krentz (5566628)
 #include <divsufsort.h>
 
 #include <algorithm>
