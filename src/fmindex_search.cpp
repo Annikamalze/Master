@@ -75,6 +75,8 @@ int main(int argc, char const* const* argv) {
     }
 
     auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> runtime = end - start;
+    std::cout << "Runtime for " << queries.size() << " queries: " << runtime.count() << " s\n";
 
     for (auto const & query : queries)
     {
