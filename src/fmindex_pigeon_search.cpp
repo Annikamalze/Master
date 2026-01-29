@@ -128,10 +128,11 @@ int main(int argc, char const* const* argv) {
 
         std::sort(hits.begin(), hits.end());
         hits.erase(std::unique(hits.begin(), hits.end()), hits.end());
-    }
 
-    for (auto const & [ref_id, pos] : hits)
-        seqan3::debug_stream << "ref_id: " << ref_id << " pos: " << pos << "\n";
+        for (auto const & [ref_id, pos] : hits){
+            seqan3::debug_stream << "ref_id: " << ref_id << " pos: " << pos << "\n";
+        }
+    }    
 
     return 0;
 }
