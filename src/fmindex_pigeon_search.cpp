@@ -9,22 +9,29 @@
 #include <vector>
 #include <string>
 
-std::vector<std::vector<seqan3::dna5>> cut_query(int pieces, const std::string& query) {
+std::vector<std::vector<seqan3::dna5>>
+cut_query(int pieces, std::vector<seqan3::dna5> const & query)
+{
     std::vector<std::vector<seqan3::dna5>> pieced_queries;
 
-    int l = query.length() / pieces;
+    size_t l = query.size() / pieces;
 
-    for (int i = 0; i < pieces; i++) {
-        if (i == pieces - 1) {
-            // letztes Stück: Rest der Zeichen
-            pieced_queries.push_back(query.substr(l * i));
-        } else {
-            pieced_queries.push_back(query.substr(l * i, l));
+    for (int i = 0; i < pieces; i++)
+    {
+        if (i == pieces - 1)
+        {
+            pieced_queries.emplace_back(query.begin() + l * i, query.end());
+        }
+        else
+        {
+            pieced_queries.emplace_back(query.begin() + l * i,
+                                        query.begin() + l * (i + 1));
         }
     }
 
     return pieced_queries;
 }
+
 
 bool verify(std::vector<seqan3::dna5> const & ref,
             std::vector<seqan3::dna5> const & query,
