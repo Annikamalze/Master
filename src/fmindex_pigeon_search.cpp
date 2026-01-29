@@ -6,6 +6,49 @@
 #include <seqan3/io/sequence_file/all.hpp>
 #include <seqan3/search/fm_index/fm_index.hpp>
 #include <seqan3/search/search.hpp>
+#include <vector>
+#include <string>
+
+std::vector<std::string> cut_query(int pieces, const std::string& query) {
+    std::vector<std::string> pieced_queries;
+
+    int l = query.length() / pieces;
+
+    for (int i = 0; i < pieces; i++) {
+        if (i == pieces - 1) {
+            // letztes Stück: Rest der Zeichen
+            pieced_queries.push_back(query.substr(l * i));
+        } else {
+            pieced_queries.push_back(query.substr(l * i, l));
+        }
+    }
+
+    return pieced_queries;
+}
+
+bool verify(std::string const & ref,
+            std::string const & query,
+            size_t pos,
+            size_t max_errors)
+{
+    // Bounds-Check
+    if (pos + query.size() > ref.size())
+        return false;
+
+    size_t errors = 0;
+
+    for (size_t i = 0; i < query.size(); i++) {   // <- i++
+        if (ref[pos + i] != query[i]) {
+            errors++;
+
+            if (errors > max_errors)
+                return false; // early exit
+        }
+    }
+
+    return true;
+}
+
 
 int main(int argc, char const* const* argv) {
     seqan3::argument_parser parser{"fmindex_pigeon_search", argc, argv, seqan3::update_notifications::off};
@@ -70,15 +113,44 @@ int main(int argc, char const* const* argv) {
     }
     queries.resize(number_of_queries); // will reduce the amount of searches
 
-    seqan3::configuration const cfg = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{0}};
-    //!TODO !ImplementMe use the seqan3::search to find a partial error free hit, verify the rest inside the text
-    // Pseudo code (might be wrong):
-    // for query in queries:
-    //      parts[3] = cut_query(3, query);
-    //      for p in {0, 1, 2}:
-    //          for (pos in search(index, part[p]):
-    //              if (verify(ref, query, pos +- ....something)):
-    //                  std::cout << "found something\n"
+    // split
 
-    return 0;
+    // create index
+    // verify query in text (where is it in original/ not pieced text)
+    seqan3::configuration const cfg =
+        seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{0}};
+
+    std::vector<std::vector<std::pair<size_t, size_t>>> results;
+
+    for (size_t q = 0; q < queries.size(); q++) {
+        auto const & query = queries[q];
+        auto parts = cut_query(3, query);
+
+        std::vector<std::pair<size_t, size_t>> query_hits;
+
+        for (size_t p = 0; p < parts.size(); p++) {
+            size_t offset = p * parts[0].size();
+
+            for (auto const & hit : seqan3::search(parts[p], index, cfg)) {
+                size_t ref_id  = hit.reference_id();
+                size_t hit_pos = hit.reference_begin_position();
+
+                if (hit_pos < offset)
+                    continue;
+
+                size_t candidate = hit_pos - offset;
+
+                if (verify(reference[ref_id], query, candidate, max_errors)) {
+                    query_hits.emplace_back(ref_id, candidate);
+                }
+            }
+        }
+
+        std::sort(query_hits.begin(), query_hits.end());
+        query_hits.erase(std::unique(query_hits.begin(), query_hits.end()),
+                        query_hits.end());
+
+        results.push_back(std::move(query_hits));
+    }
+
 }
