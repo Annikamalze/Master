@@ -1,4 +1,7 @@
-#include <sstream>
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <vector>
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
@@ -6,129 +9,125 @@
 #include <seqan3/io/sequence_file/all.hpp>
 #include <seqan3/search/fm_index/fm_index.hpp>
 #include <seqan3/search/search.hpp>
-#include <vector>
-#include <string>
 
-std::vector<std::string> cut_query(int pieces, const std::string& query) {
-    std::vector<std::string> pieced_queries;
+#include <cereal/archives/binary.hpp>
 
-    int l = query.length() / pieces;
 
-    for (int i = 0; i < pieces; i++) {
+std::vector<std::vector<seqan3::dna5>>
+cut_query(size_t pieces,
+          std::vector<seqan3::dna5> const & query)
+{
+    std::vector<std::vector<seqan3::dna5>> parts;
+    size_t l = query.size() / pieces;
+
+    for (size_t i = 0; i < pieces; ++i) {
         if (i == pieces - 1) {
-            // letztes Stück: Rest der Zeichen
-            pieced_queries.push_back(query.substr(l * i));
+            parts.emplace_back(query.begin() + l * i, query.end());
         } else {
-            pieced_queries.push_back(query.substr(l * i, l));
+            parts.emplace_back(query.begin() + l * i,
+                               query.begin() + l * (i + 1));
         }
     }
 
-    return pieced_queries;
+    return parts;
 }
 
-bool verify(std::string const & ref,
-            std::string const & query,
+bool verify(std::vector<seqan3::dna5> const & ref,
+            std::vector<seqan3::dna5> const & query,
             size_t pos,
             size_t max_errors)
 {
-    // Bounds-Check
     if (pos + query.size() > ref.size())
         return false;
 
     size_t errors = 0;
 
-    for (size_t i = 0; i < query.size(); i++) {   // <- i++
+    for (size_t i = 0; i < query.size(); ++i) {
         if (ref[pos + i] != query[i]) {
-            errors++;
-
+            ++errors;
             if (errors > max_errors)
-                return false; // early exit
+                return false;
         }
     }
 
     return true;
 }
 
+int main(int argc, char const * const * argv)
+{
+    seqan3::argument_parser parser{
+        "fmindex_pigeon_search",
+        argc,
+        argv,
+        seqan3::update_notifications::off
+    };
 
-int main(int argc, char const* const* argv) {
-    seqan3::argument_parser parser{"fmindex_pigeon_search", argc, argv, seqan3::update_notifications::off};
-
-    parser.info.author = "SeqAn-Team";
+    parser.info.author  = "SeqAn-Team";
     parser.info.version = "1.0.0";
 
-    auto index_path = std::filesystem::path{};
-    parser.add_option(index_path, '\0', "index", "path to the query file");
+    std::filesystem::path index_path;
+    std::filesystem::path reference_file;
+    std::filesystem::path query_file;
 
-    auto reference_file = std::filesystem::path{};
-    parser.add_option(reference_file, '\0', "reference", "path to the reference file");
+    size_t  number_of_queries = 100;
+    uint8_t number_of_errors  = 0;
 
-    auto query_file = std::filesystem::path{};
-    parser.add_option(query_file, '\0', "query", "path to the query file");
-
-    auto number_of_queries = size_t{100};
-    parser.add_option(number_of_queries, '\0', "query_ct", "number of query, if not enough queries, these will be duplicated");
-
-    auto number_of_errors = uint8_t{0};
-    parser.add_option(number_of_errors, '\0', "errors", "number of allowed hamming distance errors");
+    parser.add_option(index_path,        '\0', "index",    "path to the fm-index");
+    parser.add_option(reference_file,    '\0', "reference","path to the reference file");
+    parser.add_option(query_file,        '\0', "query",    "path to the query file");
+    parser.add_option(number_of_queries, '\0', "query_ct", "number of queries");
+    parser.add_option(number_of_errors,  '\0', "errors",   "allowed hamming distance");
 
     try {
-         parser.parse();
-    } catch (seqan3::argument_parser_error const& ext) {
-        seqan3::debug_stream << "Parsing error. " << ext.what() << "\n";
+        parser.parse();
+    } catch (seqan3::argument_parser_error const & e) {
+        seqan3::debug_stream << "Parsing error: " << e.what() << "\n";
         return EXIT_FAILURE;
     }
 
-    // loading our files
-    auto reference_stream = seqan3::sequence_file_input{reference_file};
-    auto query_stream     = seqan3::sequence_file_input{query_file};
+    seqan3::sequence_file_input reference_stream{reference_file};
+    seqan3::sequence_file_input query_stream{query_file};
 
-    // read reference into memory
     std::vector<std::vector<seqan3::dna5>> reference;
-    for (auto& record : reference_stream) {
-        reference.push_back(record.sequence());
-    }
+    for (auto & rec : reference_stream)
+        reference.push_back(rec.sequence());
 
-    // read query into memory
     std::vector<std::vector<seqan3::dna5>> queries;
-    for (auto& record : query_stream) {
-        queries.push_back(record.sequence());
-    }
+    for (auto & rec : query_stream)
+        queries.push_back(rec.sequence());
 
-    // loading fm-index into memory
-    using Index = decltype(seqan3::fm_index{std::vector<std::vector<seqan3::dna5>>{}}); // Some hack
-    Index index; // construct fm-index
+    using Index = seqan3::fm_index<std::vector<std::vector<seqan3::dna5>>>;
+    Index index;
+
     {
         seqan3::debug_stream << "Loading 2FM-Index ... " << std::flush;
         std::ifstream is{index_path, std::ios::binary};
-        cereal::BinaryInputArchive iarchive{is};
-        iarchive(index);
+        cereal::BinaryInputArchive archive{is};
+        archive(index);
         seqan3::debug_stream << "done\n";
     }
 
-    // duplicate input until its large enough
     while (queries.size() < number_of_queries) {
-        auto old_count = queries.size();
-        queries.resize(2 * old_count);
-        std::copy_n(queries.begin(), old_count, queries.begin() + old_count);
+        size_t old = queries.size();
+        queries.resize(2 * old);
+        std::copy_n(queries.begin(), old, queries.begin() + old);
     }
-    queries.resize(number_of_queries); // will reduce the amount of searches
+    queries.resize(number_of_queries);
 
-    // split
-
-    // create index
-    // verify query in text (where is it in original/ not pieced text)
     seqan3::configuration const cfg =
-        seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{0}};
+        seqan3::search_cfg::max_error_total{
+            seqan3::search_cfg::error_count{number_of_errors}
+        };
 
     std::vector<std::vector<std::pair<size_t, size_t>>> results;
 
-    for (size_t q = 0; q < queries.size(); q++) {
+    for (size_t q = 0; q < queries.size(); ++q) {
         auto const & query = queries[q];
         auto parts = cut_query(3, query);
 
         std::vector<std::pair<size_t, size_t>> query_hits;
 
-        for (size_t p = 0; p < parts.size(); p++) {
+        for (size_t p = 0; p < parts.size(); ++p) {
             size_t offset = p * parts[0].size();
 
             for (auto const & hit : seqan3::search(parts[p], index, cfg)) {
@@ -140,7 +139,7 @@ int main(int argc, char const* const* argv) {
 
                 size_t candidate = hit_pos - offset;
 
-                if (verify(reference[ref_id], query, candidate, max_errors)) {
+                if (verify(reference[ref_id], query, candidate, number_of_errors)) {
                     query_hits.emplace_back(ref_id, candidate);
                 }
             }
@@ -148,9 +147,10 @@ int main(int argc, char const* const* argv) {
 
         std::sort(query_hits.begin(), query_hits.end());
         query_hits.erase(std::unique(query_hits.begin(), query_hits.end()),
-                        query_hits.end());
+                         query_hits.end());
 
         results.push_back(std::move(query_hits));
     }
 
+    return 0;
 }
