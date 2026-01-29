@@ -16,7 +16,7 @@ cut_query(int pieces, std::vector<seqan3::dna5> const & query)
 
     size_t l = query.size() / pieces;
 
-    for (int i = 0; i < pieces; i++)
+    for (int i = 0; i < pieces; ++i)
     {
         if (i == pieces - 1)
         {
