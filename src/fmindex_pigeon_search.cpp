@@ -131,16 +131,20 @@ int main(int argc, char const* const* argv) {
 
     std::vector<std::vector<std::pair<size_t, size_t>>> results;
 
-    for (size_t q = 0; q < queries.size(); q++) {
+    for (size_t q = 0; q < queries.size(); q++)
+    {   
         auto const & query = queries[q];
+
+        // Teile die Query in 3 Stücke (Pigeonhole-Prinzip)
         auto parts = cut_query(3, query);
 
         std::vector<std::pair<size_t, size_t>> query_hits;
 
-        for (size_t p = 0; p < parts.size(); p++) {
-            size_t offset = p * parts[0].size();
-
-            for (auto const & hit : seqan3::search(parts[p], index, cfg)) {
+        size_t offset = 0; // Kumulativer Offset für die Teile
+        for (size_t p = 0; p < parts.size(); ++p)
+        {
+            for (auto const & hit : seqan3::search(parts[p], index, cfg))
+            {
                 size_t ref_id  = hit.reference_id();
                 size_t hit_pos = hit.reference_begin_position();
 
@@ -149,17 +153,22 @@ int main(int argc, char const* const* argv) {
 
                 size_t candidate = hit_pos - offset;
 
-                if (verify(reference[ref_id], query, candidate, number_of_errors)) {
+                // verify prüft, ob candidate gültig ist
+                if (verify(reference[ref_id], query, candidate, number_of_errors))
+                {
                     query_hits.emplace_back(ref_id, candidate);
                 }
             }
+
+            // Offset für das nächste Stück aufsummieren
+            offset += parts[p].size();
         }
 
+        // Treffer sortieren & duplizierte entfernen
         std::sort(query_hits.begin(), query_hits.end());
         query_hits.erase(std::unique(query_hits.begin(), query_hits.end()),
-                        query_hits.end());
+                     query_hits.end());
 
         results.push_back(std::move(query_hits));
     }
-
 }
