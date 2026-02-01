@@ -8,6 +8,7 @@
 #include <seqan3/search/search.hpp>
 #include <vector>
 #include <string>
+#include <chrono>
 
 std::vector<std::vector<seqan3::dna5>> cut_query(int pieces, std::vector<seqan3::dna5> const & query)
 {
@@ -108,6 +109,7 @@ int main(int argc, char const* const* argv) {
         std::vector<std::pair<size_t, size_t>> hits;
         size_t offset = 0;
 
+        auto start = std::chrono::high_resolution_clock::now();
         for (auto & part : parts)
         {
             for (auto const & hit : seqan3::search(part, index, cfg))
@@ -125,13 +127,13 @@ int main(int argc, char const* const* argv) {
 
             offset += part.size();
         }
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> runtime = end - start;
+
+        seqan3::debug_stream << "Runtime: " << runtime.count() << " seconds\n";
 
         std::sort(hits.begin(), hits.end());
         hits.erase(std::unique(hits.begin(), hits.end()), hits.end());
-
-        for (auto const & [ref_id, pos] : hits){
-            seqan3::debug_stream << "ref_id: " << ref_id << " pos: " << pos << "\n";
-        }
     }    
 
     return 0;
