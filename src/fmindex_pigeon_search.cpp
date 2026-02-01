@@ -128,8 +128,6 @@ int main(int argc, char const* const* argv) {
             offset += part.size();
         }
 
-        seqan3::debug_stream << "Runtime: " << runtime.count() << " seconds\n";
-
         std::sort(hits.begin(), hits.end());
         hits.erase(std::unique(hits.begin(), hits.end()), hits.end());
     }    
