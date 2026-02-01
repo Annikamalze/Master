@@ -131,8 +131,8 @@ int main(int argc, char const* const* argv) {
         std::sort(hits.begin(), hits.end());
         hits.erase(std::unique(hits.begin(), hits.end()), hits.end());
     }    
-    auto global_end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> total_runtime = global_end - global_start;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> total_runtime = end - start;
 
     seqan3::debug_stream
         << "Total search runtime: "
