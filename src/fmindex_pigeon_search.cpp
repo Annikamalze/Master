@@ -102,14 +102,14 @@ int main(int argc, char const* const* argv) {
     queries.resize(number_of_queries);
 
     seqan3::configuration const cfg = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{number_of_errors}};
-
+    auto start = std::chrono::high_resolution_clock::now();
     for (auto const & query : queries)
     {
         auto parts = cut_query(3, query);
         std::vector<std::pair<size_t, size_t>> hits;
         size_t offset = 0;
 
-        auto start = std::chrono::high_resolution_clock::now();
+        
         for (auto & part : parts)
         {
             for (auto const & hit : seqan3::search(part, index, cfg))
@@ -127,14 +127,19 @@ int main(int argc, char const* const* argv) {
 
             offset += part.size();
         }
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> runtime = end - start;
 
         seqan3::debug_stream << "Runtime: " << runtime.count() << " seconds\n";
 
         std::sort(hits.begin(), hits.end());
         hits.erase(std::unique(hits.begin(), hits.end()), hits.end());
     }    
+    auto global_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> total_runtime = global_end - global_start;
+
+    seqan3::debug_stream
+        << "Total search runtime: "
+        << total_runtime.count()
+        << " seconds\n";
 
     return 0;
 }
